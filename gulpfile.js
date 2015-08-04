@@ -55,58 +55,51 @@ gulp.task('jade', function() {
 	.pipe(gulp.dest('./build/'))
 	.pipe(browserSync.reload({
 		stream: true
-	}))
+	}));
 });
 
 // Process Sass (and Scss?) to CSS
 gulp.task('styles', function() {
-	return gulp.src('./src/assets/css/*.sass')
-		.pipe(plumber({
-			errorHandler: function (error) {
-				console.log(error.message);
-				this.emit('end');
-			}
-		}))
-		.pipe(sass({
-			indentedSyntax: true
-		}))
-		.pipe(prefix({
-			browsers: ['last 2 versions'],
-			cascade: false
-		}))
-		.pipe(gulp.dest('./build/assets/css/'))
-		.pipe(rename({
-			suffix: '.min'
-		}))
-		.pipe(minifycss())
-		.pipe(gulp.dest('./build/assets/css/'))
-		.pipe(browserSync.reload({
-			stream: true
-		}))
+	return gulp.src('./src/assets/css/**/*')
+	.pipe(plumber({
+		errorHandler: function (error) {
+			console.log(error.message);
+			this.emit('end');
+		}
+	}))
+	.pipe(sass({
+		indentedSyntax: true
+	}))
+	.pipe(prefix({
+		browsers: ['last 2 versions'],
+		cascade: false
+	}))
+	.pipe(gulp.dest('./build/assets/css/'))
+	.pipe(browserSync.reload({ stream: true }));
 });
 
 // Process JavaScript files
 gulp.task('js', function() {
 	return gulp.src('./src/assets/js/**/*.js')
-		.pipe(plumber({
-			errorHandler: function (error) {
-				console.log(error.message);
-				this.emit('end');
-			}
-		}))
-		.pipe(jshint())
-		.pipe(jshint.reporter('jshint-stylish', {verbose: true}))
-		.pipe(jshint.reporter('default'))
-		.pipe(concat('main.js'))
-		.pipe(gulp.dest('./build/js/'))
-		.pipe(rename({
-			suffix: '.min'
-		}))
-		.pipe(uglify())
-		.pipe(gulp.dest('./build/assets/js/'))
-		.pipe(browserSync.reload({
-			stream: true
-		}))
+	.pipe(plumber({
+		errorHandler: function (error) {
+			console.log(error.message);
+			this.emit('end');
+		}
+	}))
+	.pipe(jshint())
+	.pipe(jshint.reporter('jshint-stylish', {verbose: true}))
+	.pipe(jshint.reporter('default'))
+	.pipe(concat('main.js'))
+	.pipe(gulp.dest('./build/js/'))
+	.pipe(rename({
+		suffix: '.min'
+	}))
+	.pipe(uglify())
+	.pipe(gulp.dest('./build/assets/js/'))
+	.pipe(browserSync.reload({
+		stream: true
+	}));
 });
 
 // Build the project
@@ -115,7 +108,7 @@ gulp.task('build', ['styles', 'jade', 'js', 'images']);
 // Watch files for changes
 gulp.task('watch', function() {
 	// Watch for styles changes and compile
-	gulp.watch('./src/assets/css/*.sass', ['styles']);
+	gulp.watch(['./src/assets/css/**/*.sass', './src/assets/css/**/*.scss'], ['styles']);
 	// Watch for images and optimize them
 	gulp.watch('./src/assets/images/**/*', ['images']);
 	// Watch for JavaScript changes and compile
@@ -127,7 +120,7 @@ gulp.task('watch', function() {
 })
 
 // Compile, Serve and Watch
-gulp.task('default', ['build', 'browser-sync', 'watch', 'bs-reload']);
+gulp.task('default', ['build', 'watch', 'bs-reload', 'browser-sync']);
 
 // Serve and watch
 gulp.task('serve', ['watch', 'bs-reload', 'browser-sync']);
